@@ -78,7 +78,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
 
 
-  <meta name="keywords" content="王小维，技术，博客，前端，JavaScript，html，css，node，vue">
+  <meta name="keywords" content="Electron,">
 
 
 
@@ -95,6 +95,7 @@
 
 
 <meta name="description" content="更新原理在讲客户端更新方案之前，我们先了解一下web和客户端更新的原理 web应用在web应用的世界里，我们通常会更新web服务器上的前端代码（模板、HTML，也可能是js、css），来发布新的功能。在此之后用户再访问我们的web服务器，拿到的已经是更新过后的前端代码了。 web应用更新如此方便，得益于它中心化存储的方式：  web应用的前端代码，一般集中储存在服务器或云服务上 浏览器每次都会都会">
+<meta name="keywords" content="Electron">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Electron软件自动更新">
 <meta property="og:url" content="http://yoursite.com/2019/09/01/electron-update/index.html">
@@ -103,7 +104,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559790516250/CC64C9E3B731767DC6425346BA7F8FB3.png">
 <meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559794096697/89EA172C62ED2CFB0D1F467A7652525C.png">
-<meta property="og:updated_time" content="2019-09-01T14:56:40.228Z">
+<meta property="og:updated_time" content="2019-09-01T15:02:59.910Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Electron软件自动更新">
 <meta name="twitter:description" content="更新原理在讲客户端更新方案之前，我们先了解一下web和客户端更新的原理 web应用在web应用的世界里，我们通常会更新web服务器上的前端代码（模板、HTML，也可能是js、css），来发布新的功能。在此之后用户再访问我们的web服务器，拿到的已经是更新过后的前端代码了。 web应用更新如此方便，得益于它中心化存储的方式：  web应用的前端代码，一般集中储存在服务器或云服务上 浏览器每次都会都会">
@@ -418,7 +419,7 @@
 <h4 id="2、更新提示"><a href="#2、更新提示" class="headerlink" title="2、更新提示"></a>2、更新提示</h4><p>检查到软件更新之后，需要给出更新提示来提醒到用户。此时，我们会使用一个窗口承载更新提示的内容，后面统称为更新窗口。</p>
 <p><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1559790516250/CC64C9E3B731767DC6425346BA7F8FB3.png" alt="更新窗口"></p>
 <p>更新窗口内部代码示例：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> updateData = axios.get(<span class="string">'some-update.json'</span>)</span><br><span class="line"><span class="comment">// 检查更新的逻辑，省略</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!shouldUpdate) <span class="keyword">return</span>; <span class="comment">// 无更新</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行到这里，肯定有更新了。拿到更新数据，渲染窗口内容</span></span><br><span class="line">ReactDom.render(&lt;App</span><br><span class="line">    updateData=&#123;updateData&#125;</span><br><span class="line">    onUpdate=&#123;() =&gt; console.log('用户点击了更新')&#125;</span><br><span class="line">/&gt;, '#app');</span><br><span class="line"></span><br><span class="line">// 有更新，主动展示窗口（更新窗口默认是隐藏的）</span><br><span class="line">currentWindow.show();</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> updateData = axios.get(<span class="string">'some-update.json'</span>)</span><br><span class="line"><span class="comment">// 检查更新的逻辑，省略</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!shouldUpdate) <span class="keyword">return</span>; <span class="comment">// 无更新</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行到这里，肯定有更新了。拿到更新数据，渲染窗口内容</span></span><br><span class="line">ReactDom.render(<span class="xml"><span class="tag">&lt;<span class="name">App</span></span></span></span><br><span class="line"><span class="xml">    updateData=&#123;updateData&#125;</span></span><br><span class="line"><span class="xml">    onUpdate=&#123;() =&gt; console.log('用户点击了更新')&#125;</span></span><br><span class="line"><span class="xml">/&gt;, '#app');</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">// 有更新，主动展示窗口（更新窗口默认是隐藏的）</span></span><br><span class="line"><span class="xml">currentWindow.show();</span></span><br></pre></td></tr></table></figure>
 
 <h4 id="3、更新本机文件"><a href="#3、更新本机文件" class="headerlink" title="3、更新本机文件"></a>3、更新本机文件</h4><p>当用户点击了更新按钮之后，那么意味着我们可以开始进行最后一步了。</p>
 <p>最后的这一步骤，我们分两步进行：</p>
@@ -468,6 +469,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Electron/" rel="tag"># Electron</a>
+          
+        </div>
       
 
       
@@ -587,7 +594,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
