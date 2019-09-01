@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="王小维，技术，博客，前端，JavaScript，html，css，node，vue">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/my-favicon.png?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="背景许多本地应用（例如vscode、QQ），都支持通过浏览器来启动PC上的本地软件 这个功能够使网页端和客户端联动起来，用户体验还是很好的，实现起来也并不复杂。酷家乐客户端已经支持了这个功能，如下图：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浏览器启动本地软件">
+<meta property="og:url" content="http://yoursite.com/2019/09/01/electron-browser/index.html">
+<meta property="og:site_name" content="王小维的博客">
+<meta property="og:description" content="背景许多本地应用（例如vscode、QQ），都支持通过浏览器来启动PC上的本地软件 这个功能够使网页端和客户端联动起来，用户体验还是很好的，实现起来也并不复杂。酷家乐客户端已经支持了这个功能，如下图：">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559289537111/69F9399A3909DF6EDAD827F78EC5BFE3.png">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559290924848/EE6C8F72336AE99D113A809D88202654.png">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559292291811/2894E08183138C2A4B74F30AA81364C6.png">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559292594731/A6F81909E710DF2240ED1DBD6ABE6FE8.png">
+<meta property="og:updated_time" content="2019-09-01T14:57:31.741Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浏览器启动本地软件">
+<meta name="twitter:description" content="背景许多本地应用（例如vscode、QQ），都支持通过浏览器来启动PC上的本地软件 这个功能够使网页端和客户端联动起来，用户体验还是很好的，实现起来也并不复杂。酷家乐客户端已经支持了这个功能，如下图：">
+<meta name="twitter:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559289537111/69F9399A3909DF6EDAD827F78EC5BFE3.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/09/01/electron-browser/">
+
+
+
+
+
+  <title>浏览器启动本地软件 | 王小维的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">王小维的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我根本不会写代码</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/01/electron-browser/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王小维">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王小维的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">浏览器启动本地软件</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-01T22:52:09+08:00">
+                2019-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术向/" itemprop="url" rel="index">
+                    <span itemprop="name">技术向</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>许多本地应用（例如vscode、QQ），都支持通过浏览器来启动PC上的本地软件</p>
+<p>这个功能够使网页端和客户端联动起来，用户体验还是很好的，实现起来也并不复杂。酷家乐客户端已经支持了这个功能，如下图：<br><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1559289537111/69F9399A3909DF6EDAD827F78EC5BFE3.png" alt="从浏览器启动酷家乐"></p>
+<a id="more"></a>
+
+<h3 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h3><p><strong>浏览器在解析url的时候，会尝试从系统本地寻找url协议所关联的应用，如果有关联的应用，则尝试打开这个应用</strong></p>
+<p>例如VsCode从web端安装插件的时候，实际上是访问了一个<code>vscode</code>协议的url，从而达到启动用户本地VsCode的目的<br><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1559290924848/EE6C8F72336AE99D113A809D88202654.png" alt="VsCode从web端安装本地插件"></p>
+<h3 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h3><p>现在，我们只需要<strong>将自定义的协议注册到用户电脑上</strong>，就可以实现功能了。用户浏览器里访问带有自定义协议的url，即可启动我们的客户端。</p>
+<h4 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h4><p>在windows下，注册一个协议比较简单，<strong>写注册表</strong>就可以了。这部分微软爸爸有很详细的文档，参考 <a href="https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa767914(v=vs.85)" target="_blank" rel="noopener">Registering an Application to a URI Scheme</a></p>
+<p>建议在安装程序中写入注册表项，并且指定在卸载程序中，删除这些注册表项。以下是<a href="http://www.jrsoftware.org/isinfo.php" target="_blank" rel="noopener">inno setup</a>打包程序中，操作注册表的示例代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[Registry]</span><br><span class="line">Root: HKCR; SubKey: Kujiale; ValueData: &quot;KujialeProtocol&quot;; ValueType: string; Flags: createvalueifdoesntexist uninsdeletekey;</span><br><span class="line">Root: HKCR; SubKey: Kujiale; ValueName: &quot;URL Protocol&quot;; ValueData: &quot;&#123;app&#125;\&#123;#appExe&#125;&quot;; ValueType: string; Flags: createvalueifdoesntexist uninsdeletekey;</span><br><span class="line">Root: HKCR; SubKey: Kujiale\DefaultIcon; ValueData: &quot;&#123;app&#125;\&#123;#appExe&#125;&quot;; ValueType: string; Flags: createvalueifdoesntexist uninsdeletekey;</span><br><span class="line">Root: HKCR; SubKey: Kujiale\shell\open\command; ValueData: &quot;&#123;app&#125;\&#123;#appExe&#125; &quot;&quot;%1&quot;&quot;&quot;; Flags: createvalueifdoesntexist uninsdeletekey; ValueType: string;</span><br></pre></td></tr></table></figure>
+
+<p>当然，也可以在软件启动的时候操作注册表，这个时候其实是用NodeJs来与注册表交互，推荐一个npm包<a href="https://github.com/ironSource/node-regedit" target="_blank" rel="noopener">node-regedit</a></p>
+<p>自定义协议注册成功后，注册表里是这样子的<br><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1559292291811/2894E08183138C2A4B74F30AA81364C6.png" alt="注册协议成功"></p>
+<h4 id="MacOS"><a href="#MacOS" class="headerlink" title="MacOS"></a>MacOS</h4><p>在MacOS系统下面，我们就没有注册表可以写了，所以要换一个实现方法。在这之前，先介绍一些东西</p>
+<h5 id="info-plist"><a href="#info-plist" class="headerlink" title="info.plist"></a>info.plist</h5><p>iOS和MacOS的应用包中，都有一个info.plist文件，这个文件主要用来记录应用的一些meta信息，参考<a href="https://developer.apple.com/documentation/bundleresources/information_property_list" target="_blank" rel="noopener">Information Property List</a>。文件用键值对的形式来记录信息(xml)，结构如下：<br><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1559292594731/A6F81909E710DF2240ED1DBD6ABE6FE8.png" alt="info.plist"></p>
+<h5 id="CFBundleURLTypes"><a href="#CFBundleURLTypes" class="headerlink" title="CFBundleURLTypes"></a>CFBundleURLTypes</h5><p>官方解释：CFBundleURLTypes：A list of URL schemes (http, ftp, and so on) supported by the app.</p>
+<p>其实呢，这个就是info.plist里面的一个key，对应的value是一个数组。可以通过这个字段来为应用注册一个 or 多个 URL Schema。参考<a href="https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleurltypes#details" target="_blank" rel="noopener">CFBundleURLTypes</a></p>
+<h5 id="修改info-plist文件"><a href="#修改info-plist文件" class="headerlink" title="修改info.plist文件"></a>修改info.plist文件</h5><p>在了解了plist文件之后，我们现在只需为App包中info.plist，设置CFBundleURLTypes的值即可。那么如何修改呢，手写吗？nonono，这种事情当然要交给工具来做，不然太low了。</p>
+<p>在<a href="https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#protocols" target="_blank" rel="noopener">Electron Packager</a>中，有一个配置<code>protocols</code>可以注册自定义协议，只对MacOS端生效，原理就是上面提到的修改infi.plist文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// for mac</span><br><span class="line">options.protocols = [&#123;</span><br><span class="line">  name: &apos;钟离&apos;,</span><br><span class="line">  schemes: [&apos;zhongli&apos;, &apos;test&apos;], // 可以注册多个协议</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+
+<h3 id="接收参数"><a href="#接收参数" class="headerlink" title="接收参数"></a>接收参数</h3><p>协议注册完毕之后，我们已经可以在浏览器中，通过访问自定义协议url来启动客户端了。</p>
+<p>对于url中的不同参数，客户端的行为也是不一样的，例如<code>vscode:extension/ms-python.python</code>这个url，启动了VsCode的同时也告诉了VsCode：<strong>我要安装插件，插件名是ms-phthon.python</strong>。</p>
+<p>Vscode通过解析url中的参数来实现自定义行为，那么作为客户端如何拿到这个url呢？</p>
+<h4 id="Windows-1"><a href="#Windows-1" class="headerlink" title="Windows"></a>Windows</h4><p>对于windows，参数会通过启动参数的形式传递给应用程序。因此，我们可以很方便的拿到这个参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 通过自定义url启动客户端时</span><br><span class="line">console.log(process.argv);</span><br><span class="line"></span><br><span class="line">// 打印出</span><br><span class="line">[</span><br><span class="line"> &apos;C://your-app.exe&apos;, // 启动路径</span><br><span class="line"> &apos;kujiale://111&apos;,  // 启动的自定义url</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h3 id="MacOS-1"><a href="#MacOS-1" class="headerlink" title="MacOS"></a>MacOS</h3><p>在Mac下不会通过启动参数传递给应用，通过自定义协议打开应用，app会收到 <a href="https://electronjs.org/docs/api/app#event-open-url-macos" target="_blank" rel="noopener">open-url</a> 事件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// mac下通过kujiale协议启动应用</span><br><span class="line">app.on(&apos;open-url&apos;, (e, url) =&gt; &#123; // eslint-disable-line</span><br><span class="line">  parse(url)； 解析url</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>本文分了两部分来讲述如何从浏览器启动PC端的应用</p>
+<ol>
+<li><p>注册自定义协议，对于所有应用程序都适用</p>
+</li>
+<li><p>接收参数，对使用Electron构建的应用适用</p>
+</li>
+</ol>
+<p>欢迎大家在评论区讨论，技术交流 &amp; 内推 -&gt; <a href="mailto:zhongli@qunhemail.com" target="_blank" rel="noopener">zhongli@qunhemail.com</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/01/electron-update/" rel="next" title="Electron软件自动更新">
+                <i class="fa fa-chevron-left"></i> Electron软件自动更新
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/01/electron-process/" rel="prev" title="Electron进程通信">
+                Electron进程通信 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="王小维">
+          <p class="site-author-name" itemprop="name">王小维</p>
+           
+              <p class="site-description motion-element" itemprop="description">生活就像写代码，总是有bug</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/littlecold233" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/ai-hu-luo-bu-de-mao-20/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:840923738@qq.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现原理"><span class="nav-number">2.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体实现"><span class="nav-number">3.</span> <span class="nav-text">具体实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows"><span class="nav-number">3.1.</span> <span class="nav-text">Windows</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MacOS"><span class="nav-number">3.2.</span> <span class="nav-text">MacOS</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#info-plist"><span class="nav-number">3.2.1.</span> <span class="nav-text">info.plist</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#CFBundleURLTypes"><span class="nav-number">3.2.2.</span> <span class="nav-text">CFBundleURLTypes</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#修改info-plist文件"><span class="nav-number">3.2.3.</span> <span class="nav-text">修改info.plist文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收参数"><span class="nav-number">4.</span> <span class="nav-text">接收参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows-1"><span class="nav-number">4.1.</span> <span class="nav-text">Windows</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MacOS-1"><span class="nav-number">5.</span> <span class="nav-text">MacOS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最后"><span class="nav-number">6.</span> <span class="nav-text">最后</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王小维</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

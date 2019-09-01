@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="王小维，技术，博客，前端，JavaScript，html，css，node，vue">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/my-favicon.png?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="本文的初衷Electron所使用的技术栈（JavaScript、NodeJs、HTML、CSS）和web前端工程师完美契合。于是，越来越多的前端工程师，用Electron来开发桌面客户端的开发，我也是其中的一员。 虽然Electron技术栈对前端工程师比较友好，但是概念较多，和web前端开发还是有很大差别的，写个入坑指南希望能帮助读者快速上手Electron。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Electron入坑篇">
+<meta property="og:url" content="http://yoursite.com/2019/09/01/electron-start/index.html">
+<meta property="og:site_name" content="王小维的博客">
+<meta property="og:description" content="本文的初衷Electron所使用的技术栈（JavaScript、NodeJs、HTML、CSS）和web前端工程师完美契合。于是，越来越多的前端工程师，用Electron来开发桌面客户端的开发，我也是其中的一员。 虽然Electron技术栈对前端工程师比较友好，但是概念较多，和web前端开发还是有很大差别的，写个入坑指南希望能帮助读者快速上手Electron。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/jpeg/1559209399478/371B688C47F3B371D3E75F88DFC5508E.jpg">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559207527158/25CDCBEF0196CBA861EC69EB935F255D.png">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559208083915/4C03D06022B4866B7B50642531419AA7.png">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559209946469/EEA8FB5602671D22C1D22FF4BBB2241B.png">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1555035524878/8156FD8BD581FECE71EABFE0B5371F07.png">
+<meta property="og:updated_time" content="2019-09-01T14:56:37.093Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Electron入坑篇">
+<meta name="twitter:description" content="本文的初衷Electron所使用的技术栈（JavaScript、NodeJs、HTML、CSS）和web前端工程师完美契合。于是，越来越多的前端工程师，用Electron来开发桌面客户端的开发，我也是其中的一员。 虽然Electron技术栈对前端工程师比较友好，但是概念较多，和web前端开发还是有很大差别的，写个入坑指南希望能帮助读者快速上手Electron。">
+<meta name="twitter:image" content="https://qhstaticssl.kujiale.com/newt/29/image/jpeg/1559209399478/371B688C47F3B371D3E75F88DFC5508E.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/09/01/electron-start/">
+
+
+
+
+
+  <title>Electron入坑篇 | 王小维的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">王小维的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我根本不会写代码</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/01/electron-start/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王小维">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王小维的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Electron入坑篇</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-01T22:48:37+08:00">
+                2019-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术向/" itemprop="url" rel="index">
+                    <span itemprop="name">技术向</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="本文的初衷"><a href="#本文的初衷" class="headerlink" title="本文的初衷"></a>本文的初衷</h3><p>Electron所使用的技术栈（JavaScript、NodeJs、HTML、CSS）和web前端工程师完美契合。于是，越来越多的前端工程师，用Electron来开发桌面客户端的开发，我也是其中的一员。</p>
+<p>虽然Electron技术栈对前端工程师比较友好，但是概念较多，和web前端开发还是有很大差别的，写个入坑指南希望能帮助读者快速上手Electron。</p>
+<a id="more"></a>
+
+<h3 id="了解客户端"><a href="#了解客户端" class="headerlink" title="了解客户端"></a>了解客户端</h3><p>首先抛出一个问题，web应用是桌面客户端吗？显然不是。那么，问题来了，什么样的软件才是桌面客户端呢？我们既然要从web前端转到客户端开发，那么就需要了解客户端，就像我们当初了解web应用一样。</p>
+<p>回到刚刚那个问题，桌面客户端有两个重要的特点：</p>
+<ol>
+<li>独立运行于操作系统上（桌面客户端只是PC，那么限定windows、MacOS、linux这几个主流PC操作系统）</li>
+<li>有自己的GUI（用户图形界面 graphical user interface）</li>
+</ol>
+<p>web应用有自己的GUI，必须在浏览器中执行，因此不是桌面客户端。</p>
+<p>浏览器能直接运行在操作系统上，而且有自己的GUI，因此浏览器是桌面客户端。</p>
+<h3 id="Electron的能力"><a href="#Electron的能力" class="headerlink" title="Electron的能力"></a>Electron的能力</h3><p>在刚刚接触Electorn的时候，文档看的我是眼花缭乱。在某个加班的深夜，我不禁对天长叹：这个东西到底能干啥？</p>
+<p>这东西能干啥？在经历了Electron的反复摩擦之后，我总结了Electron的几个关键能力：</p>
+<ol>
+<li>NodeJs全部能力，与<strong>操作系统</strong>交互<ul>
+<li>operation system 与操作系统相关的操作</li>
+<li>HTTP(s)、HTTP2</li>
+<li>process、child process 进程相关</li>
+<li>file system 文件系统</li>
+<li>…省略</li>
+</ul>
+</li>
+<li>Electron提供的基础模块，主要与<strong>操作系统</strong>交互<ul>
+<li>app 主进程声明周期管理，控制MacOS任务栏dock、windows任务栏taskbar</li>
+<li>BrowserWindow 控制窗口，在MacOS和windows中窗口非常重要！</li>
+<li>screen 操作用户显示器</li>
+<li>globalShortcut 系统级别快捷键</li>
+<li>…省略</li>
+</ul>
+</li>
+<li>Chromium提供的能力，主要提供<strong>GUI图形界面</strong><ul>
+<li>解析HTML、CSS、JS</li>
+<li>ajax请求</li>
+<li>cookie、localstorage</li>
+<li>…省略</li>
+</ul>
+</li>
+</ol>
+<h4 id="能力越大，责任越大"><a href="#能力越大，责任越大" class="headerlink" title="能力越大，责任越大"></a>能力越大，责任越大</h4><p>如果用户安装了我们的桌面客户端，那么我们的软件在用户电脑上运行时，就有了非常大的权利，这是把双刃剑。</p>
+<p>用户选择了我们的软件，我们也要对用户的电脑负责。能力越大，责任也就越大：</p>
+<p>1.注意内存的占用，特别是chromium，简直是内存怪兽。可以通过os来获取用户电脑的配置，然后根据电脑的配置和可用资源，来制定合理的策略。</p>
+<ol>
+<li>为软件增加代码签名，提升安全性</li>
+<li>谨慎操作注册表、用户敏感目录</li>
+</ol>
+<p>一旦被贴上【流氓软件】、【不好用】的标签，就很难再改变用户的印象了。</p>
+<h3 id="主进程、渲染进程"><a href="#主进程、渲染进程" class="headerlink" title="主进程、渲染进程"></a>主进程、渲染进程</h3><p><img src="https://qhstaticssl.kujiale.com/newt/29/image/jpeg/1559209399478/371B688C47F3B371D3E75F88DFC5508E.jpg" alt="整体执行流程，展示了主进程和渲染进程的关系"></p>
+<h4 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h4><p>主进程：从整个应用启动到结束，该进程一直存在。<strong>主进程只有一个</strong>。</p>
+<p>渲染进程：主进程可用创建/销毁渲染进程，因此渲染进程的生命周期是不固定的。渲染进程可以有多个。</p>
+<h4 id="执行环境"><a href="#执行环境" class="headerlink" title="执行环境"></a>执行环境</h4><p><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1559207527158/25CDCBEF0196CBA861EC69EB935F255D.png" alt="渲染进程可用模块"><br><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1559208083915/4C03D06022B4866B7B50642531419AA7.png" alt="主进程可用模块"></p>
+<p>在Electron的API文档中，会在文档顶部标识该模块在哪个进程可用，例如：<a href="https://electronjs.org/docs/api/ipc-renderer" target="_blank" rel="noopener">ipcRenderer</a></p>
+<h4 id="职责划分"><a href="#职责划分" class="headerlink" title="职责划分"></a>职责划分</h4><table>
+<thead>
+<tr>
+<th>主进程</th>
+<th>渲染进程</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>控制app的生命周期，为app注册关键事件</td>
+<td>解析HTML，渲染窗口内容</td>
+</tr>
+<tr>
+<td>阻止一些默认行为，例如webContents的跳转、download事件的默认行为等等（在渲染进程无法做到）</td>
+<td>处理窗口的交互逻辑</td>
+</tr>
+<tr>
+<td>创建BrowserWindow，也就是渲染进程。合理设置窗口的参数，控制窗口的生命周期（例如何时销毁窗口），决定BrowserWindow加载何处的HTML</td>
+<td>与主进程通信，实现高级交互</td>
+</tr>
+</tbody></table>
+<h3 id="窗口、前端资源"><a href="#窗口、前端资源" class="headerlink" title="窗口、前端资源"></a>窗口、前端资源</h3><p>我们回顾一下刚刚讲到的执行流程，其中有一个有趣的点，就是Electron的窗口会加载一个HTML来渲染窗口的内容。</p>
+<blockquote>
+<p>HTML，以及HTML加载的css、js文件，统称为前端资源</p>
+</blockquote>
+<p>如果不加载HTML的，客户端还能用吗？不妨来试试</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main process</span></span><br><span class="line"><span class="keyword">const</span> win1 = <span class="keyword">new</span> BrowserWindow();</span><br><span class="line"><span class="keyword">const</span> win2 = <span class="keyword">new</span> BrowserWindow();</span><br></pre></td></tr></table></figure>
+
+<p>上述代码在主进程中执行，创建了两个窗口，窗口并没加载HTML文件。但是窗口却是真实存在的，带有系统标准的控制栏，可拖动，是货真价实的系统窗口！</p>
+<p><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1559209946469/EEA8FB5602671D22C1D22FF4BBB2241B.png" alt="两个空白窗口"></p>
+<p><strong>我们可以发现，前端资源和窗口是分离的。由主进程创建的的窗口（BrowserWindow），既是一个系统原生窗口，同时也是一个加载&amp;渲染前端资源的容器</strong></p>
+<p>窗口通常会通过file协议和http(s)协议来加载前端资源，接下来我们看看这两种方式的区别。</p>
+<h4 id="通过file协议加载HTML"><a href="#通过file协议加载HTML" class="headerlink" title="通过file协议加载HTML"></a>通过file协议加载HTML</h4><p>在Electron的官方入门例子中，就是通过file协议来加载HTML的</p>
+<p>通过file协议加载HTML，无论有没有网络，都可以加载到HTML文件，这是file协议核心优势。缺点也比较明显：</p>
+<ol>
+<li>如果页面资源要更新，那么只能通过发版来解决（如果你用webview，那么webview的内容就可以自动更新，不过webview也需要有网络才能加载）</li>
+<li>在file协议下，无法通过ajax来请求数据（协议不同），只能通过NodeJs的http(s)模块来发起网络请求</li>
+</ol>
+<h4 id="通过http协议加载HTML"><a href="#通过http协议加载HTML" class="headerlink" title="通过http协议加载HTML"></a>通过http协议加载HTML</h4><p>通过http协议加载HTML，优点是可以随时通过web页面的部署，更新渲染进程的资源，并且在https协议下，你可以在页面中使用前端熟悉的ajax请求来获取数据。</p>
+<p>当然，缺点也比较明显：</p>
+<ol>
+<li>没有网络，并且在你没有做HTML的缓存时，你的窗口内容无法加载</li>
+<li>必须通过https来加载，保证页面内容的安全性</li>
+</ol>
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><p>方便读者更好理解上文的内容，写了一个小demo，源代码地址 <a href="https://github.com/littlecold233/electron-demo" target="_blank" rel="noopener">https://github.com/littlecold233/electron-demo</a>，例子有以下特点：</p>
+<ul>
+<li><p>创建主窗口，阻止关闭主窗口关闭的默认事件，不销毁窗口。（大部分客户端的主窗口，关闭主窗口的时候，实际上是隐藏了该窗口，例如QQ、微信）</p>
+</li>
+<li><p>应用退出时，会尝试关闭所有窗口，再退出应用。如果主窗口的关闭行为默认事件被阻止，那么会导致主窗口无法关闭，整个应用无法退出。因此使用<code>forceQuit</code>这个变量来控制。</p>
+</li>
+<li><p>使用http或者file协议加载窗口前端资源（例子中，默认加载的是微信）</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">const</span> &#123; app, BrowserWindow &#125; = <span class="built_in">require</span>(<span class="string">'electron'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">main</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">await</span> app.whenReady();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> forceQuit = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> majorWindow = <span class="keyword">new</span> BrowserWindow(&#123;</span><br><span class="line">    title: <span class="string">'主窗口'</span>,</span><br><span class="line">    width: <span class="number">1000</span>,</span><br><span class="line">    height: <span class="number">750</span>,</span><br><span class="line">    minWidth: <span class="number">1000</span>,</span><br><span class="line">    minHeight: <span class="number">750</span>,</span><br><span class="line">    backgroundColor: <span class="string">'#f2f2f2'</span>,</span><br><span class="line">  &#125;); <span class="comment">// 主窗口</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 阻止标题更新</span></span><br><span class="line">  majorWindow.on(<span class="string">'page-title-updated'</span>, (e) =&gt; &#123;</span><br><span class="line">    e.preventDefault();</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  majorWindow.on(<span class="string">'close'</span>, (e) =&gt; &#123;</span><br><span class="line">      <span class="comment">// 用户希望退出的时候，不作处理，默认会销毁这个窗口</span></span><br><span class="line">      <span class="keyword">if</span> (forceQuit) <span class="keyword">return</span>;</span><br><span class="line">      e.preventDefault();</span><br><span class="line"></span><br><span class="line">      <span class="comment">// macOS全屏的处理</span></span><br><span class="line">      <span class="keyword">if</span> (majorWindow.isFullScreen()) &#123;</span><br><span class="line">        majorWindow.once(<span class="string">'leave-full-screen'</span>, () =&gt; &#123;</span><br><span class="line">          majorWindow.hide();</span><br><span class="line">        &#125;);</span><br><span class="line">        majorWindow.setFullScreen(<span class="literal">false</span>);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        majorWindow.hide();  <span class="comment">// 隐藏窗口</span></span><br><span class="line">      &#125;</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 点击dock打开主窗口</span></span><br><span class="line">  app.on(<span class="string">'activate'</span>, () =&gt; &#123;</span><br><span class="line">    majorWindow.show();</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 用户使用cmd + Q、代码中调用app.quit等情况</span></span><br><span class="line">  <span class="comment">// 此时用户希望能够退出应用，因此将forceQuit改为true</span></span><br><span class="line">  app.on(<span class="string">'before-quit'</span>, () =&gt; &#123;</span><br><span class="line">    forceQuit = <span class="literal">true</span>;</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  app.dock.setIcon(<span class="string">'./img/icon.png'</span>); <span class="comment">// 在app打包后，这一句代码其实是不需要的</span></span><br><span class="line"></span><br><span class="line">  majorWindow.loadURL(<span class="string">'https://wx.qq.com'</span>); <span class="comment">// http协议加载前端资源，随便加载一个微信试试</span></span><br><span class="line">  <span class="comment">// majorWindow.loadURL('file://index.html'); // file协议加载前端资源</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">main();</span><br></pre></td></tr></table></figure>
+
+<p>在本地跑一下这个例子<img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1555035524878/8156FD8BD581FECE71EABFE0B5371F07.png" alt="微信测试"></p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>欢迎大家在评论区讨论，技术交流 &amp; 内推 -&gt; <a href="mailto:zhongli@qunhemail.com" target="_blank" rel="noopener">zhongli@qunhemail.com</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/01/electron-download/" rel="next" title="Electron下载器">
+                <i class="fa fa-chevron-left"></i> Electron下载器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/01/electron-update/" rel="prev" title="Electron软件自动更新">
+                Electron软件自动更新 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="王小维">
+          <p class="site-author-name" itemprop="name">王小维</p>
+           
+              <p class="site-description motion-element" itemprop="description">生活就像写代码，总是有bug</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/littlecold233" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/ai-hu-luo-bu-de-mao-20/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:840923738@qq.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#本文的初衷"><span class="nav-number">1.</span> <span class="nav-text">本文的初衷</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#了解客户端"><span class="nav-number">2.</span> <span class="nav-text">了解客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Electron的能力"><span class="nav-number">3.</span> <span class="nav-text">Electron的能力</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#能力越大，责任越大"><span class="nav-number">3.1.</span> <span class="nav-text">能力越大，责任越大</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主进程、渲染进程"><span class="nav-number">4.</span> <span class="nav-text">主进程、渲染进程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#生命周期"><span class="nav-number">4.1.</span> <span class="nav-text">生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行环境"><span class="nav-number">4.2.</span> <span class="nav-text">执行环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#职责划分"><span class="nav-number">4.3.</span> <span class="nav-text">职责划分</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#窗口、前端资源"><span class="nav-number">5.</span> <span class="nav-text">窗口、前端资源</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过file协议加载HTML"><span class="nav-number">5.1.</span> <span class="nav-text">通过file协议加载HTML</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过http协议加载HTML"><span class="nav-number">5.2.</span> <span class="nav-text">通过http协议加载HTML</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例"><span class="nav-number">6.</span> <span class="nav-text">代码示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最后"><span class="nav-number">7.</span> <span class="nav-text">最后</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王小维</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

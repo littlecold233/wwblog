@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="王小维，技术，博客，前端，JavaScript，html，css，node，vue">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/my-favicon.png?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="更新原理在讲客户端更新方案之前，我们先了解一下web和客户端更新的原理 web应用在web应用的世界里，我们通常会更新web服务器上的前端代码（模板、HTML，也可能是js、css），来发布新的功能。在此之后用户再访问我们的web服务器，拿到的已经是更新过后的前端代码了。 web应用更新如此方便，得益于它中心化存储的方式：  web应用的前端代码，一般集中储存在服务器或云服务上 浏览器每次都会都会">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Electron软件自动更新">
+<meta property="og:url" content="http://yoursite.com/2019/09/01/electron-update/index.html">
+<meta property="og:site_name" content="王小维的博客">
+<meta property="og:description" content="更新原理在讲客户端更新方案之前，我们先了解一下web和客户端更新的原理 web应用在web应用的世界里，我们通常会更新web服务器上的前端代码（模板、HTML，也可能是js、css），来发布新的功能。在此之后用户再访问我们的web服务器，拿到的已经是更新过后的前端代码了。 web应用更新如此方便，得益于它中心化存储的方式：  web应用的前端代码，一般集中储存在服务器或云服务上 浏览器每次都会都会">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559790516250/CC64C9E3B731767DC6425346BA7F8FB3.png">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559794096697/89EA172C62ED2CFB0D1F467A7652525C.png">
+<meta property="og:updated_time" content="2019-09-01T14:56:40.228Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Electron软件自动更新">
+<meta name="twitter:description" content="更新原理在讲客户端更新方案之前，我们先了解一下web和客户端更新的原理 web应用在web应用的世界里，我们通常会更新web服务器上的前端代码（模板、HTML，也可能是js、css），来发布新的功能。在此之后用户再访问我们的web服务器，拿到的已经是更新过后的前端代码了。 web应用更新如此方便，得益于它中心化存储的方式：  web应用的前端代码，一般集中储存在服务器或云服务上 浏览器每次都会都会">
+<meta name="twitter:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1559790516250/CC64C9E3B731767DC6425346BA7F8FB3.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/09/01/electron-update/">
+
+
+
+
+
+  <title>Electron软件自动更新 | 王小维的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">王小维的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我根本不会写代码</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/01/electron-update/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王小维">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王小维的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Electron软件自动更新</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-01T22:50:58+08:00">
+                2019-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术向/" itemprop="url" rel="index">
+                    <span itemprop="name">技术向</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="更新原理"><a href="#更新原理" class="headerlink" title="更新原理"></a>更新原理</h3><p>在讲客户端更新方案之前，我们先了解一下web和客户端更新的原理</p>
+<h4 id="web应用"><a href="#web应用" class="headerlink" title="web应用"></a>web应用</h4><p>在web应用的世界里，我们通常会更新web服务器上的前端代码（模板、HTML，也可能是js、css），来发布新的功能。在此之后用户再访问我们的web服务器，拿到的已经是更新过后的前端代码了。</p>
+<p>web应用更新如此方便，得益于它中心化存储的方式：</p>
+<ol>
+<li>web应用的前端代码，一般集中储存在服务器或云服务上</li>
+<li>浏览器每次都会都会去服务器拉取最新的资源，<strong>用户本机实际上没有持久化储存web应用的代码</strong></li>
+</ol>
+<blockquote>
+<p>浏览器缓存也算是在用户本机存储了前端代码，但是在web应用需要更新的时候，肯定是会禁用缓存的，否则这次发布对有缓存的用户无效。</p>
+</blockquote>
+<a id="more"></a>
+
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p>和web应用的中心化储存不同，客户端的代码实际上是一种<strong>分布式存储</strong>，每个用户电脑上都有一份完整的代码文件，有点像<code>git</code>。</p>
+<p>用户在电脑上安装客户端，实际上会将客户端代码文件持久储存到本机。例如在MacOS上，代码文件存放在<code>/Applications</code>目录下。</p>
+<blockquote>
+<p>客户端内嵌web页面的更新方式，和上面讲到的web应用更新是一样的，不再赘述（参考移动APP内嵌的H5页面更新）</p>
+</blockquote>
+<h4 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h4><p><strong>web应用的更新，实际上是更新服务端代码文件</strong></p>
+<p><strong>客户端的更新，实际上是更新用户电脑上代码文件</strong></p>
+<h3 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h3><p>Electron官网有关于更新的教程 <a href="https://electronjs.org/docs/tutorial/updates#updating-applications" target="_blank" rel="noopener">Updating Applications</a>，但是都不能满足业务需求：</p>
+<ol>
+<li><code>update.electron.org</code>，代码必须托管在github上，pass</li>
+<li><code>electron-builder</code>，windows下只支持NSIS，而且需要搭建HTTP服务。更新程序UI和交互定制也不是很友好</li>
+<li><code>Deploying an Update Server</code>，这个方案需要部署一个update server，也比较麻烦</li>
+</ol>
+<p>因此，我们使用的是自己实现的一套更新流程。</p>
+<h4 id="1、检查更新"><a href="#1、检查更新" class="headerlink" title="1、检查更新"></a>1、检查更新</h4><p><strong>检查更新</strong>是整体流程的第一个步骤。如果有更新，后续的更新逻辑才会执行。通常我们会在<strong>软件启动时</strong>检查更新。</p>
+<p>检查更新的策略，实际上是<strong>将本地客户端的版本与远程版本</strong>进行一次对比，然后根据版本对比的结果来给出不同的更新展示。</p>
+<h5 id="远程版本"><a href="#远程版本" class="headerlink" title="远程版本"></a>远程版本</h5><p>相比于自己搭建一个update server，维护一个远程的JSON数据成本是很低的。这个远程数据可以是一个后端接口或者cdn上的json文件，<strong>并且可以在需要更新的时候，及时更新远程数据的内容</strong></p>
+<p>这个远程JSON数据里面一般会存放版本号、更新内容介绍以及发布时间：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> updateData = axios.get(<span class="string">'https://some-update.json'</span>);</span><br><span class="line"><span class="built_in">console</span>.log(updateData);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">&#123;</span></span><br><span class="line"><span class="comment">    version: '1.0.0',</span></span><br><span class="line"><span class="comment">    changeLogs: ['来个开发祭天','新增了🐂🍺的功能'],</span></span><br><span class="line"><span class="comment">    time: '2019-06-06',</span></span><br><span class="line"><span class="comment">&#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="本地版本"><a href="#本地版本" class="headerlink" title="本地版本"></a>本地版本</h5><p>在Electron中获取本地版本是非常简单的 <a href="https://electronjs.org/docs/api/app#appgetversion" target="_blank" rel="noopener">app.getVersion</a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> localVersion = app.getVersion(); <span class="comment">// 0.0.1</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="版本对比"><a href="#版本对比" class="headerlink" title="版本对比"></a>版本对比</h5><p>通常，<strong>远程版本号大于本地版本时</strong>，即认定为有更新。在有更新的情况下，我们还可以根据版本号里的major、minor、patch版本变动，来制定不同的更新策略。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 远程版本 &gt; 本地版本</span></span><br><span class="line"><span class="keyword">const</span> shouldUpdate = semver.gt(removeVersion, localVersion);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 例子：major版本号变化时，给出强的更新提示。否则给出正常更新提示</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> isMajorUpdate = semver.diff(removeVersion, localVersion) === <span class="string">'major'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!shouldUpdate) <span class="keyword">return</span>; <span class="comment">// 无更新，不走后续</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (isMajorUpdate) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'给出强势更新'</span>)</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'给出普通的更新提示'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>对于版本号的操作使用 <a href="https://www.npmjs.com/package/semver" target="_blank" rel="noopener">semver</a></p>
+</blockquote>
+<h4 id="2、更新提示"><a href="#2、更新提示" class="headerlink" title="2、更新提示"></a>2、更新提示</h4><p>检查到软件更新之后，需要给出更新提示来提醒到用户。此时，我们会使用一个窗口承载更新提示的内容，后面统称为更新窗口。</p>
+<p><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1559790516250/CC64C9E3B731767DC6425346BA7F8FB3.png" alt="更新窗口"></p>
+<p>更新窗口内部代码示例：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> updateData = axios.get(<span class="string">'some-update.json'</span>)</span><br><span class="line"><span class="comment">// 检查更新的逻辑，省略</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!shouldUpdate) <span class="keyword">return</span>; <span class="comment">// 无更新</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行到这里，肯定有更新了。拿到更新数据，渲染窗口内容</span></span><br><span class="line">ReactDom.render(&lt;App</span><br><span class="line">    updateData=&#123;updateData&#125;</span><br><span class="line">    onUpdate=&#123;() =&gt; console.log('用户点击了更新')&#125;</span><br><span class="line">/&gt;, '#app');</span><br><span class="line"></span><br><span class="line">// 有更新，主动展示窗口（更新窗口默认是隐藏的）</span><br><span class="line">currentWindow.show();</span><br></pre></td></tr></table></figure>
+
+<h4 id="3、更新本机文件"><a href="#3、更新本机文件" class="headerlink" title="3、更新本机文件"></a>3、更新本机文件</h4><p>当用户点击了更新按钮之后，那么意味着我们可以开始进行最后一步了。</p>
+<p>最后的这一步骤，我们分两步进行：</p>
+<ol>
+<li>获取到最新的安装程序(.dmg or .exe)，因为最新的代码文件就在安装程序中</li>
+<li>替换掉用户本机上的代码文件</li>
+</ol>
+<p>这一步骤，可以交给用户来做，也可以由我们帮用户来做。我们来看看这两种情况下，分别是如何实现的。</p>
+<h5 id="交给用户来更新"><a href="#交给用户来更新" class="headerlink" title="交给用户来更新"></a>交给用户来更新</h5><p>首先，我们需要更新网站客户端下载页上的安装程序资源至最新。然后，用户点击更新按钮之后，<strong>直接用本机默认浏览器打开下载页，让用户自己下载、安装</strong>，安装程序正常执行完毕之后，本身就可以覆盖本机代码文件。</p>
+<ol>
+<li>用户通过浏览器，在下载页获取到了最新的安装程序。</li>
+<li>用户手动打开了安装程序，并执行完毕安装程序。</li>
+</ol>
+<p>此法用户体验不是很好，但是优点也很明显：节省了很多开发成本，直接复用了web页面来做更新。</p>
+<p>如果采用这种策略，那么代码会非常简单:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 点击更新按钮</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handleUpdate</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    shell.openExternal(<span class="string">'https://www.kujiale.com/activity/136'</span>); <span class="comment">// 打开一个下载页，剩下的交给用户</span></span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="我们帮用户更新"><a href="#我们帮用户更新" class="headerlink" title="我们帮用户更新"></a>我们帮用户更新</h5><p>当然，为了追求更好的用户体验，直接在更新窗口的代码中实现功能是更好的。</p>
+<p>第一步，下载最新的安装程序，并且给出下载进度展示。下载进度功能推荐使用<a href="https://www.npmjs.com/package/request-progress" target="_blank" rel="noopener">request-progress</a>来做。当然，也可以使用NodeJs原生的<code>http</code>和<code>stream</code>模块来实现下载进度展示，这里不详细讲解。</p>
+<p>下载到的安装程序，可以暂时存放到用户电脑的临时文件夹中</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">const</span> request = <span class="built_in">require</span>(<span class="string">'request'</span>);</span><br><span class="line"><span class="keyword">const</span> progress = <span class="built_in">require</span>(<span class="string">'request-progress'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 点击更新按钮</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handleUpdate</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 根据版本号拼接安装程序地址</span></span><br><span class="line">    <span class="keyword">const</span> downloadUrl = <span class="string">`https://someupdate/<span class="subst">$&#123;updateData.version&#125;</span>/installer.dmg`</span>;</span><br><span class="line">    <span class="comment">// 用request下载</span></span><br><span class="line">    progress(request(downloadUrl))</span><br><span class="line">    .on(<span class="string">'progress'</span>, (state) =&gt; &#123;</span><br><span class="line">        <span class="comment">// 进度</span></span><br><span class="line">        <span class="built_in">console</span>.log(state)</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="comment">// 写入到临时文件夹</span></span><br><span class="line">    .pipe(fs.createWriteStream(path.join(app.getPath(<span class="string">'temp'</span>), <span class="string">'installer.dmg'</span>)))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>进度展示示例图：<img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1559794096697/89EA172C62ED2CFB0D1F467A7652525C.png" alt="下载"></p>
+<p>第二步，将安装程序中的代码文件更新到用户本机上，此时有两种方案：</p>
+<ol>
+<li>直接打开安装程序，用户跟随安装程序指引稍作点击即可完成安装。</li>
+<li>解压安装程序中的内容，并将内容更新到用户本机</li>
+</ol>
+<p>在windows下，安装程序里面是有业务逻辑的：操作注册表、卸载程序、快捷方式等等，因此我们选择第一种方案。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; shell, app &#125; = <span class="built_in">require</span>(<span class="string">'electron'</span>);</span><br><span class="line">shell.openItem(<span class="string">'your installer exe path'</span>); <span class="comment">// 打开下载好的安装程序</span></span><br><span class="line">app.quit(); <span class="comment">// 退出当前客户端</span></span><br></pre></td></tr></table></figure>
+
+<p>在MacOS下，我们所发行的dmg文件其实没有业务逻辑，因此可以使用方案二，直接把<code>.app</code>目录解压出来，然后拷贝到<code>/Applications</code>目录即可。在MacOS下，解压dmg文件可以使用<a href="https://ss64.com/osx/hdiutil.html" target="_blank" rel="noopener">hdiutil</a>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> cp = <span class="built_in">require</span>(<span class="string">'child_progress'</span>);</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs-extra'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 下载完毕之后的dmg文件，文件内的.app目录名为Test</span></span><br><span class="line"><span class="keyword">const</span> installerPath = <span class="string">'/your_installer.dmg'</span>; </span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用hdiutil来解压dmg文件内部资源，解压后的资源目录为/Volumes/your_installer</span></span><br><span class="line"> cproc.execSync(<span class="string">`hdiutil attach <span class="subst">$&#123;installerPath&#125;</span> -nobrowse`</span>, &#123;</span><br><span class="line">   stdio: [<span class="string">'ignore'</span>, <span class="string">'ignore'</span>, <span class="string">'ignore'</span>]</span><br><span class="line"> &#125;);</span><br><span class="line"> </span><br><span class="line"> <span class="comment">// 删掉原有的.app目录</span></span><br><span class="line"> fs.removeSync(<span class="string">'/Applications/Test.app'</span>); </span><br><span class="line"> </span><br><span class="line"> <span class="comment">// 把Volumes目录下的.app目录拷贝到/Applications中，更新完毕</span></span><br><span class="line"> fs.copySync(<span class="string">'/Volums/your_installer/Test.app'</span>, <span class="string">'/Applications'</span>);</span><br><span class="line"> </span><br><span class="line"> <span class="comment">// 重启应用</span></span><br><span class="line"> app.relaunch();</span><br><span class="line"> app.quit();</span><br></pre></td></tr></table></figure>
+
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>欢迎大家在评论区讨论，技术交流 &amp; 内推 -&gt; <a href="mailto:zhongli@qunhemail.com" target="_blank" rel="noopener">zhongli@qunhemail.com</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/01/electron-start/" rel="next" title="Electron入坑篇">
+                <i class="fa fa-chevron-left"></i> Electron入坑篇
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/01/electron-browser/" rel="prev" title="浏览器启动本地软件">
+                浏览器启动本地软件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="王小维">
+          <p class="site-author-name" itemprop="name">王小维</p>
+           
+              <p class="site-description motion-element" itemprop="description">生活就像写代码，总是有bug</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/littlecold233" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/ai-hu-luo-bu-de-mao-20/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:840923738@qq.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#更新原理"><span class="nav-number">1.</span> <span class="nav-text">更新原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#web应用"><span class="nav-number">1.1.</span> <span class="nav-text">web应用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端"><span class="nav-number">1.2.</span> <span class="nav-text">客户端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#结论"><span class="nav-number">1.3.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体实现"><span class="nav-number">2.</span> <span class="nav-text">具体实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、检查更新"><span class="nav-number">2.1.</span> <span class="nav-text">1、检查更新</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#远程版本"><span class="nav-number">2.1.1.</span> <span class="nav-text">远程版本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#本地版本"><span class="nav-number">2.1.2.</span> <span class="nav-text">本地版本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#版本对比"><span class="nav-number">2.1.3.</span> <span class="nav-text">版本对比</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、更新提示"><span class="nav-number">2.2.</span> <span class="nav-text">2、更新提示</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、更新本机文件"><span class="nav-number">2.3.</span> <span class="nav-text">3、更新本机文件</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#交给用户来更新"><span class="nav-number">2.3.1.</span> <span class="nav-text">交给用户来更新</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#我们帮用户更新"><span class="nav-number">2.3.2.</span> <span class="nav-text">我们帮用户更新</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最后"><span class="nav-number">3.</span> <span class="nav-text">最后</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王小维</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

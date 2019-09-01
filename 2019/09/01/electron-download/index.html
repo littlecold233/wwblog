@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Electron,[object Object],技术向,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/my-favicon.png?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="背景打开酷家乐客户端，可以在左下角的更多菜单中找到下载管理这个功能，今天我们就来看看在Electron中如何实现一个下载管理器。">
+<meta name="keywords" content="Electron,[object Object],技术向">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Electron下载器">
+<meta property="og:url" content="http://yoursite.com/2019/09/01/electron-download/index.html">
+<meta property="og:site_name" content="王小维的博客">
+<meta property="og:description" content="背景打开酷家乐客户端，可以在左下角的更多菜单中找到下载管理这个功能，今天我们就来看看在Electron中如何实现一个下载管理器。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1560415159147/E2BFD3DCCD7534E863B1BE7178282CC9.png?kpm=xoyn.3c1c6b822d4df612.5a3e533.1560415166836">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/jpeg/1560420633080/D032548744C5A74DFACB06F7C8C6358E.jpg?kpm=xoyn.67735f2d58007596.5a3e533.1560420615468">
+<meta property="og:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1560485534120/E2BFD3DCCD7534E863B1BE7178282CC9.png">
+<meta property="og:updated_time" content="2019-09-01T14:57:27.085Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Electron下载器">
+<meta name="twitter:description" content="背景打开酷家乐客户端，可以在左下角的更多菜单中找到下载管理这个功能，今天我们就来看看在Electron中如何实现一个下载管理器。">
+<meta name="twitter:image" content="https://qhstaticssl.kujiale.com/newt/29/image/png/1560415159147/E2BFD3DCCD7534E863B1BE7178282CC9.png?kpm=xoyn.3c1c6b822d4df612.5a3e533.1560415166836">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/09/01/electron-download/">
+
+
+
+
+
+  <title>Electron下载器 | 王小维的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">王小维的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我根本不会写代码</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/01/electron-download/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王小维">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王小维的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Electron下载器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-01T22:46:23+08:00">
+                2019-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>打开酷家乐客户端，可以在左下角的更多菜单中找到下载管理这个功能，今天我们就来看看在Electron中如何实现一个下载管理器。</p>
+<p><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1560415159147/E2BFD3DCCD7534E863B1BE7178282CC9.png?kpm=xoyn.3c1c6b822d4df612.5a3e533.1560415166836" alt="下载管理器"></p>
+<a id="more"></a>
+
+<h3 id="如何触发下载行为"><a href="#如何触发下载行为" class="headerlink" title="如何触发下载行为"></a>如何触发下载行为</h3><p>由于Electron渲染层是基于chromium的，触发下载的逻辑和chromium是一致的，页面中的a标签或者js跳转等等行为都可能触发下载，具体视访问的资源而定。什么样的资源会触发浏览器的下载行为呢？</p>
+<ol>
+<li>response header中的<code>Content-Disposition</code>为attachment。参考<a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Disposition" target="_blank" rel="noopener">MDN Content-Disposition</a></li>
+<li>response header中的<code>Content-Type</code>，是浏览器无法直接打开的文件类型，例如<code>application/octet-stream</code>，此时取决于浏览器的具体实现了。例子: IE无法打开pdf文件，chrome可以直接打开pdf文件，因此pdf类型的url在chrome上可以直接打开，而在IE下会触发下载行为。</li>
+</ol>
+<p>在Electron中还有一种方法可以触发下载： <a href="https://electronjs.org/docs/api/web-contents#contentsdownloadurlurl" target="_blank" rel="noopener">webContents.download</a>。相当于直接调用chromium底层的下载逻辑，忽略headers中的那些判断，直接下载。</p>
+<p>上述两种下载行为，都会触发session的<a href="https://electronjs.org/docs/api/session#event-will-download" target="_blank" rel="noopener">will-download</a>事件，<strong>在这里可以获取到关键的<a href="https://electronjs.org/docs/api/download-item" target="_blank" rel="noopener">downloadItem</a>对象</strong></p>
+<h3 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h3><p><img src="https://qhstaticssl.kujiale.com/newt/29/image/jpeg/1560420633080/D032548744C5A74DFACB06F7C8C6358E.jpg?kpm=xoyn.67735f2d58007596.5a3e533.1560420615468" alt="流程图"></p>
+<h3 id="设置文件路径"><a href="#设置文件路径" class="headerlink" title="设置文件路径"></a>设置文件路径</h3><p>如果不做任何处理的话，触发下载行为时Electron会弹出一个系统dialog，让用户来选择文件存放的目录。这个体验并不好，因此我们首先需要把这个系统dialog去掉。使用<code>downloadItem.savePath</code>即可。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Set the save path, making Electron not to prompt a save dialog.</span></span><br><span class="line">downloadItem.setSavePath(<span class="string">'/tmp/save.pdf'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>为文件设置默认下载路径，就需要考虑文件名重复的情况，一般来说会使用文件名自增的逻辑，例如：test.jpg、test.jpg(1)这种格式。文件默认存放目录，也是一个问题，我们统一使用<code>app.getPath(&#39;downloads&#39;)</code>作为文件下载目录。为了用户体验，后续提供修改文件下载目录功能即可。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// in main.js 主进程中</span></span><br><span class="line"><span class="keyword">const</span> &#123; session &#125; = <span class="built_in">require</span>(<span class="string">'electron'</span>);</span><br><span class="line">session.defaultSession.on(<span class="string">'will-download'</span>, <span class="keyword">async</span> (event, item) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> fileName = item.getFilename();</span><br><span class="line">    <span class="keyword">const</span> url = item.getURL();</span><br><span class="line">    <span class="keyword">const</span> startTime = item.getStartTime();</span><br><span class="line">    <span class="keyword">const</span> initialState = item.getState();</span><br><span class="line">    <span class="keyword">const</span> downloadPath = app.getPath(<span class="string">'downloads'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> fileNum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> savePath = path.join(downloadPath, fileName);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// savePath基础信息</span></span><br><span class="line">    <span class="keyword">const</span> ext = path.extname(savePath);</span><br><span class="line">    <span class="keyword">const</span> name = path.basename(savePath, ext);</span><br><span class="line">    <span class="keyword">const</span> dir = path.dirname(savePath);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 文件名自增逻辑</span></span><br><span class="line">    <span class="keyword">while</span> (fs.pathExistsSync(savePath)) &#123;</span><br><span class="line">      fileNum += <span class="number">1</span>;</span><br><span class="line">      savePath = path.format(&#123;</span><br><span class="line">        dir,</span><br><span class="line">        ext,</span><br><span class="line">        name: <span class="string">`<span class="subst">$&#123;name&#125;</span>(<span class="subst">$&#123;fileNum&#125;</span>)`</span>,</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置下载目录，阻止系统dialog的出现</span></span><br><span class="line">    item.setSavePath(savePath);</span><br><span class="line">    </span><br><span class="line">     <span class="comment">// 通知渲染进程，有一个新的下载任务</span></span><br><span class="line">    win.webContents.send(<span class="string">'new-download-item'</span>, &#123;</span><br><span class="line">      savePath,</span><br><span class="line">      url,</span><br><span class="line">      startTime,</span><br><span class="line">      state: initialState,</span><br><span class="line">      paused: item.isPaused(),</span><br><span class="line">      totalBytes: item.getTotalBytes(),</span><br><span class="line">      receivedBytes: item.getReceivedBytes(),</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下载任务更新</span></span><br><span class="line">    item.on(<span class="string">'updated'</span>, (e, state) =&gt; &#123; <span class="comment">// eslint-disable-line</span></span><br><span class="line">      win.webContents.send(<span class="string">'download-item-updated'</span>, &#123;</span><br><span class="line">        startTime,</span><br><span class="line">        state,</span><br><span class="line">        totalBytes: item.getTotalBytes(),</span><br><span class="line">        receivedBytes: item.getReceivedBytes(),</span><br><span class="line">        paused: item.isPaused(),</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下载任务完成</span></span><br><span class="line">    item.on(<span class="string">'done'</span>, (e, state) =&gt; &#123; <span class="comment">// eslint-disable-line</span></span><br><span class="line">      win.webContents.send(<span class="string">'download-item-done'</span>, &#123;</span><br><span class="line">        startTime,</span><br><span class="line">        state,</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>现在触发下载行为，文件就已经会下载到<code>Downloads</code>目录了，文件名带有自增逻辑。<strong>同时，对下载窗口发送了关键事件，下载窗口可以根据这些事件和数据，创建、更新下载任务</strong>。</p>
+<blockquote>
+<p>上述步骤在渲染进程使用remote实现会有问题，无法获取到实时的下载数据。因此建议在主进程实现。</p>
+</blockquote>
+<h3 id="下载记录"><a href="#下载记录" class="headerlink" title="下载记录"></a>下载记录</h3><p>下载功能需要缓存下载历史在本地，下载历史的数据比较多，因此我们使用<a href="https://github.com/louischatriot/nedb" target="_blank" rel="noopener">nedb</a>作为本地数据库。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化 nedb 数据库</span></span><br><span class="line"><span class="keyword">const</span> db = nedbStore(&#123; filename, <span class="attr">autoload</span>: <span class="literal">true</span> &#125;);</span><br><span class="line"></span><br><span class="line">ipcRenderer.on(<span class="string">'new-download-item'</span>, (e, item) =&gt; &#123;</span><br><span class="line">    <span class="comment">// 数据库新增一条新纪录</span></span><br><span class="line">    db.insert(item);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// UI中新增一条下载任务</span></span><br><span class="line">    <span class="keyword">this</span>.addItem(item);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更新下载窗口的任务进度</span></span><br><span class="line">ipcRenderer.on(<span class="string">'download-item-updated'</span>, (e, item) =&gt; &#123;</span><br><span class="line">    <span class="keyword">this</span>.updateItem(item)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 下载结束，更新数据</span></span><br><span class="line">ipcRenderer.on(<span class="string">'download-item-done'</span>, (e, item) =&gt; &#123;</span><br><span class="line">    <span class="comment">// 更新数据库</span></span><br><span class="line">    db.update(item);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 更新UI中下载任务状态</span></span><br><span class="line">    <span class="keyword">this</span>.updateItem(item);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>此时本地数据库中的数据，是这样的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;paused&quot;:false,&quot;receivedBytes&quot;:0,&quot;savePath&quot;:&quot;/Users/ww/Downloads/酷家乐装修网-保利金色佳苑-户型图.jpg&quot;,&quot;startTime&quot;:1560415098.731598,&quot;state&quot;:&quot;completed&quot;,&quot;totalBytes&quot;:236568,&quot;url&quot;:&quot;https://qhtbdoss.kujiale.com/fpimgnew/prod/3FO4EGX11S9S/op/LUBAVDQKN4BE6AABAAAAACY8.jpg?kpm=9V8.32a74ad82d44e7d0.3dba44f.1560415094020&quot;,&quot;_id&quot;:&quot;6AorFZvpI0N8Yzw9&quot;&#125;</span><br><span class="line">&#123;&quot;paused&quot;:false,&quot;receivedBytes&quot;:0,&quot;savePath&quot;:&quot;/Users/ww/Downloads/Kujiale-12.0.2-stable(1).dmg&quot;,&quot;startTime&quot;:1560415129.488072,&quot;state&quot;:&quot;progressing&quot;,&quot;totalBytes&quot;:80762523,&quot;url&quot;:&quot;https://qhstaticssl.kujiale.com/download/kjl-software12/Kujiale-12.0.2-stable.dmg?timestamp=1560415129351&quot;,&quot;_id&quot;:&quot;YAeWIy2xoeWTw0Ht&quot;&#125;</span><br><span class="line">&#123;&quot;paused&quot;:false,&quot;receivedBytes&quot;:0,&quot;savePath&quot;:&quot;/Users/ww/Downloads/酷家乐装修网-保利金色佳苑-户型图(1).jpg&quot;,&quot;startTime&quot;:1560418413.240669,&quot;state&quot;:&quot;progressing&quot;,&quot;totalBytes&quot;:236568,&quot;url&quot;:&quot;https://qhtbdoss.kujiale.com/fpimgnew/prod/3FO4EGX11S9S/op/LUBBLFYKN4BE6AABAAAAADY8.jpg?kpm=9V8.32a74ad82d44e7d0.3dba44f.1560418409875&quot;,&quot;_id&quot;:&quot;obFLotKillhzTw09&quot;&#125;</span><br><span class="line">&#123;&quot;paused&quot;:false,&quot;receivedBytes&quot;:0,&quot;savePath&quot;:&quot;/Users/ww/Downloads/酷家乐装修网-保利金色佳苑-户型图(1).jpg&quot;,&quot;startTime&quot;:1560418413.240669,&quot;state&quot;:&quot;completed&quot;,&quot;totalBytes&quot;:236568,&quot;url&quot;:&quot;https://qhtbdoss.kujiale.com/fpimgnew/prod/3FO4EGX11S9S/op/LUBBLFYKN4BE6AABAAAAADY8.jpg?kpm=9V8.32a74ad82d44e7d0.3dba44f.1560418409875&quot;,&quot;_id&quot;:&quot;obFLotKillhzTw09&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在渲染进程初始化的时候，需要读取下载记录，数据按下载时间倒序。读取数量需要做一下限制，否则会影响性能，暂时限制50条。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 渲染进程中</span></span><br><span class="line"><span class="keyword">const</span> db = nedbStore(&#123; filename, <span class="attr">autoload</span>: <span class="literal">true</span> &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读取历史数据</span></span><br><span class="line"><span class="keyword">const</span> downloadHistory = <span class="keyword">await</span> db.cfind(&#123;&#125;).sort(&#123;</span><br><span class="line">  startTime: <span class="number">-1</span>,</span><br><span class="line">&#125;).limit(<span class="number">50</span>).exec()</span><br><span class="line">  .catch(<span class="function"><span class="params">err</span> =&gt;</span> logger.error(err));</span><br><span class="line"><span class="keyword">if</span> (downloadHistory) &#123;</span><br><span class="line">  <span class="keyword">this</span>.setList(downloadHistory.map(<span class="function">(<span class="params">d</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> item = d;</span><br><span class="line">    <span class="comment">// 历史记录中，只有需要未完成和完成两个状态</span></span><br><span class="line">    <span class="keyword">if</span> (item.state !== <span class="string">'completed'</span>) &#123; </span><br><span class="line">      item.state = <span class="string">'cancelled'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> item;</span><br><span class="line">  &#125;));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义下载目录"><a href="#自定义下载目录" class="headerlink" title="自定义下载目录"></a>自定义下载目录</h3><p>默认下载目录在Electron默认为本机上的<code>Downloads</code>目录，提供用户设置下载目录的功能，就需要在本地缓存用户自定义的下载目录。这种基础配置我们使用<a href="https://github.com/sindresorhus/electron-store" target="_blank" rel="noopener">electron-store</a>来实现</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// in config.json</span><br><span class="line">&#123;</span><br><span class="line">	<span class="attr">"downloadsPath"</span>: <span class="string">"/Users/ww/Downloads/归档"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在窗口初始化的时候，检查缓存中是否有自定义下载目录，如果有则更改app的默认下载目录</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">componentDidMount() &#123;</span><br><span class="line">    <span class="keyword">const</span> downloadsPath = store.get(<span class="string">'downloadsPath'</span>);</span><br><span class="line">    <span class="keyword">if</span> (downloadsPath) &#123;</span><br><span class="line">        app.setPath(<span class="string">'downloads'</span>, downloadsPath);</span><br><span class="line">        <span class="comment">// app.getPath('downloads'); -&gt; /Users/ww/Downloads/归档</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用户点击更换下载目录，此时需要以下步骤：</p>
+<ol>
+<li>弹出文件目录选择dialog，使用<code>dialog.showOpenDialog</code>实现</li>
+<li>更新本地缓存中的自定义下载目录</li>
+<li>修改当前app的默认下载目录</li>
+<li>更新下载窗口中的下载目录文案</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 用户点击更改下载目录的回调</span></span><br><span class="line">changeDoiwnloadHandler = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> paths = dialog.showOpenDialog(&#123;</span><br><span class="line">      title: <span class="string">'选择文件存放目录'</span>,</span><br><span class="line">      properties: [<span class="string">'openDirectory'</span>],</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">if</span> (paths &amp;&amp; paths.length) &#123;</span><br><span class="line">      <span class="comment">// 先更新一下本地缓存</span></span><br><span class="line">      store.set(<span class="string">'downloadsPath'</span>, paths[<span class="number">0</span>]);</span><br><span class="line">      </span><br><span class="line">      <span class="comment">// 更新当前的下载目录</span></span><br><span class="line">      app.setPath(<span class="string">'downloads'</span>, paths[<span class="number">0</span>]);</span><br><span class="line">      </span><br><span class="line">      <span class="comment">// 更新下载目录文案</span></span><br><span class="line">      <span class="keyword">this</span>.updateDownloadsPath();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="计算下载进度"><a href="#计算下载进度" class="headerlink" title="计算下载进度"></a>计算下载进度</h3><p>拿到<a href="https://electronjs.org/docs/api/download-item" target="_blank" rel="noopener">downloadItem</a>之后，可以获取到已下载的字节数和文件的总字节数，以此来计算下载进度。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> percent = item.getReceivedBytes() / item.getTotalBytes();</span><br></pre></td></tr></table></figure>
+
+<h3 id="操作文件"><a href="#操作文件" class="headerlink" title="操作文件"></a>操作文件</h3><p>在下载管理窗口中，双击下载任务可以打开该文件，点击查看按钮可以打开文件所在目录。我们统一使用Electron的<a href="https://electronjs.org/docs/api/shell" target="_blank" rel="noopener">shell</a>模块来实现。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">openFile = <span class="function">(<span class="params">path</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!fs.pathExistsSync) <span class="keyword">return</span>; <span class="comment">// 文件不存在的情况</span></span><br><span class="line">    shell.openItem(path); <span class="comment">// 打开文件</span></span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">openFileFolder = <span class="keyword">async</span> (path) =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (!fs.pathExistsSync(path)) &#123; <span class="comment">// 文件不存在</span></span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    shell.showItemInFolder(path); <span class="comment">// 打开文件所在文件夹</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取文件关联图标"><a href="#获取文件关联图标" class="headerlink" title="获取文件关联图标"></a>获取文件关联图标</h3><p>仔细观察下载管理窗口我们可以发现，文件的图标都是从系统获取的，和我们在文件管理器中看到的文件图标一致。</p>
+<p><img src="https://qhstaticssl.kujiale.com/newt/29/image/png/1560485534120/E2BFD3DCCD7534E863B1BE7178282CC9.png" alt="文件图标"></p>
+<p>上图中dmg、jpg文件都展示了系统关联的文件图标，用户体验很好。我们可以使用<a href="https://electronjs.org/docs/api/app#appgetfileiconpath-options-callback" target="_blank" rel="noopener">getFileIcon</a>来获取系统图标，以下是具体实现代码。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; app &#125; = <span class="built_in">require</span>(<span class="string">'electron'</span>).remote;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 封装一个函数</span></span><br><span class="line"><span class="keyword">const</span> getFileIcon = <span class="function">(<span class="params">path</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> defaultIcon = <span class="string">'some-default.jpg'</span>;</span><br><span class="line">    <span class="keyword">if</span> (!path) <span class="keyword">return</span> resolve(defaultIcon);</span><br><span class="line">    <span class="keyword">return</span> app.getFileIcon(path, (err, nativeImage) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span> resolve(defaultIcon);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> resolve(nativeImage.toDataURL()); <span class="comment">// 使用base64展示图标</span></span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取图标</span></span><br><span class="line"><span class="keyword">const</span> imgSrc = <span class="keyword">await</span> getFileIcon(<span class="string">'./test.jpg'</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>欢迎大家在评论区讨论，技术交流 &amp; 内推 -&gt; <a href="mailto:zhongli@qunhemail.com" target="_blank" rel="noopener">zhongli@qunhemail.com</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Electron/" rel="tag"># Electron</a>
+          
+            <a href="/tags/object-Object/" rel="tag"># [object Object]</a>
+          
+            <a href="/tags/技术向/" rel="tag"># 技术向</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/08/days-in-kujiale/" rel="next" title="在酷家乐实习的日子">
+                <i class="fa fa-chevron-left"></i> 在酷家乐实习的日子
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/01/electron-start/" rel="prev" title="Electron入坑篇">
+                Electron入坑篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="王小维">
+          <p class="site-author-name" itemprop="name">王小维</p>
+           
+              <p class="site-description motion-element" itemprop="description">生活就像写代码，总是有bug</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/littlecold233" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/ai-hu-luo-bu-de-mao-20/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:840923738@qq.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何触发下载行为"><span class="nav-number">2.</span> <span class="nav-text">如何触发下载行为</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#整体流程"><span class="nav-number">3.</span> <span class="nav-text">整体流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置文件路径"><span class="nav-number">4.</span> <span class="nav-text">设置文件路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下载记录"><span class="nav-number">5.</span> <span class="nav-text">下载记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义下载目录"><span class="nav-number">6.</span> <span class="nav-text">自定义下载目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计算下载进度"><span class="nav-number">7.</span> <span class="nav-text">计算下载进度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作文件"><span class="nav-number">8.</span> <span class="nav-text">操作文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取文件关联图标"><span class="nav-number">9.</span> <span class="nav-text">获取文件关联图标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最后"><span class="nav-number">10.</span> <span class="nav-text">最后</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王小维</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
