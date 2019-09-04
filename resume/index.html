@@ -102,7 +102,7 @@
 <meta property="og:description" content="My Resume               #page-wrap { width: 800px; margin: 40px auto 60px; }         #page-wrap * { margin: 0; padding: 0; }         #page-wrap { font: 16px Helvetica, Sans">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/images/jump.gif">
-<meta property="og:updated_time" content="2019-09-04T09:49:36.679Z">
+<meta property="og:updated_time" content="2019-09-04T12:57:07.559Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="王小维的博客">
 <meta name="twitter:description" content="My Resume               #page-wrap { width: 800px; margin: 40px auto 60px; }         #page-wrap * { margin: 0; padding: 0; }         #page-wrap { font: 16px Helvetica, Sans">
@@ -310,7 +310,7 @@
         #page-wrap  a:hover { border-bottom-style: solid; color: black; }
         #page-wrap h1 { margin: 0 0 16px 0; padding: 0 0 16px 0; font-size: 42px; font-weight: bold; letter-spacing: -2px; border-bottom: 1px solid #999; }
         #page-wrap h2 { font-size: 20px; margin: 0 0 6px 0; position: relative; }
-        #page-wrap h2 span { position: absolute; bottom: 0; right: 0; font-style: italic; font-family: Georgia, Serif; font-size: 16px; color: #999; font-weight: normal; }
+        #page-wrap h2 span { position: absolute; bottom: 0; right: 0; font-style: italic; font-family: Georgia, Serif; font-size: 16px; font-weight: normal; }
         #page-wrap p { margin: 0 0 16px 0; }
         #page-wrap ul { margin: 0 0 32px 17px; }
         #page-wrap #objective { width: 600px; float: left; }
@@ -335,7 +335,7 @@
             <h1 class="fn">王 维</h1>
         
             <p>
-                工作经验 👩‍💻: <span>两年</span> <br>
+                工作经验 👩‍💻: <span>2年+</span> <br>
                 生日 🎂: <span>1996.8</span> <br>
                 手机 📱: <span class="tel">15717196905</span><br>
                 Email 📧: <a class="email" href="mailto:840923738@qq.com" target="_blank" rel="noopener">840923738@qq.com</a>
@@ -388,6 +388,7 @@
             <dt>Experience</dt>
             <dd>
                 <h2>Muya React组件库 <span>核心开发成员/主要维护者 - 酷家乐，2019.7-至今</span></h2>
+                <p>企业级React组件库，对标蚂蚁金服Ant Design，主要服务于Saas后台，通过自定义主题可以适配C端业务线</p>
                 <ul>
                     <li>基于Babel、TypeScript，从0到1完成了组件库的代码构建、发布流程</li>
                     <li>设计项目技术选型，组件统一采用react hooks来实现，样式方面选用styled-component</li>
@@ -398,7 +399,9 @@
                 </ul>
                 
                 <h2>酷家乐桌面客户端 <span>项目负责人/主要维护者 - 酷家乐, 2018.7-2019.7</span></h2>
-                <p>项目地址：<a href="https://www.kujiale.com/activity/136" target="_blank" rel="noopener">酷家乐桌面客户端</a></p>
+                <p>
+                    酷家乐桌面客户端是一个基于Electron的项目，是酷家乐最大的流量入口。我在接手项目之后，首先了解了历史代码的整体结构并且开始重构，后续成立了客户端敏捷组，在团队成员的共同努力下发布了客户端V12版本，获得了里程碑式的成功。
+                    项目地址：<a href="https://www.kujiale.com/activity/136" target="_blank" rel="noopener">酷家乐桌面客户端</a></p>
                 <ul>
                     <li>重构客户端历史代码，设计新的进程通信方案，主进程和渲染进程拆代码分离</li>
                     <li>实现客户端<strong>一键打包</strong>功能，并且无缝兼容MacOS版本</li>
@@ -409,6 +412,14 @@
                     <li>产出了一系列Electron技术博客 
                         <a href="https://webfe.kujiale.com/electron-ku-jia-le-ke-hu-duan-kai-fa-shi-jian-fen-xiang-ru-keng-zhi-nan/" target="_blank">文章地址</a>
                     </li>
+                </ul> 
+
+                <h2>乐高CMS系统<span>项目负责人 - 酷家乐, 2018.2-2018.5</span></h2>
+                <p>乐高CMS是一个数据配置中心，它是一个内部系统。首先，在前台页面中通过sdk来加载数据，例如文案、图片等等，然后运营可以在乐高中修改并发布数据，线上页面所使用的数据也会即时更新<br>由此可以实现，<strong>快速迭代、随时发布</strong>的功能</p>
+                <ul>
+                    <li>前端使用TypeScript、React开发，后台使用koa框架，数据储存使用MySQL</li>
+                    <li>项目部署使用docker + k8s，部署到公司内部k8s集群</li>
+                    <li>使用JSON Schema自动生成表单，节省了开发表单的成本</li>
                 </ul> 
 
                 <h2>酷家乐大学&成长体系 <span>核心开发成员 - 酷家乐, 2017.7-2017.12</span></h2>
@@ -423,13 +434,6 @@
                     <li>使用canvas+原生JS实现六维能力雷达图</li>
                 </ul> 
 
-                <h2>乐高CMS数据管理系统<span>项目负责人 - 酷家乐, 2018.2-2018.5</span></h2>
-                <ul>
-                    <li>该系统为内部系统，可以理解为数据配置中心。在系统中修改并发布数据，线上页面即时生效</li>
-                    <li>使用JSON Schema自动生成表单</li>
-                    <li>前端使用TypeScript、React开发，后台使用koa框架，数据储存使用MySQL</li>
-                    <li>项目部署使用docker + k8s，部署到公司内部k8s集群</li>
-                </ul> 
             </dd>
             
             <dd class="clear"></dd>
@@ -620,7 +624,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#contact-info"><span class="nav-number">1.</span> <span class="nav-text">王 维</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.1.</span> <span class="nav-text">前端技能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.2.</span> <span class="nav-text">通用技能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.3.</span> <span class="nav-text">Muya React组件库 核心开发成员/主要维护者 - 酷家乐，2019.7-至今</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.4.</span> <span class="nav-text">酷家乐桌面客户端 项目负责人/主要维护者 - 酷家乐, 2018.7-2019.7</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.5.</span> <span class="nav-text">酷家乐大学&amp;成长体系 核心开发成员 - 酷家乐, 2017.7-2017.12</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.6.</span> <span class="nav-text">乐高CMS数据管理系统项目负责人 - 酷家乐, 2018.2-2018.5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.7.</span> <span class="nav-text">武汉工程大学 </span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#contact-info"><span class="nav-number">1.</span> <span class="nav-text">王 维</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.1.</span> <span class="nav-text">前端技能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.2.</span> <span class="nav-text">通用技能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.3.</span> <span class="nav-text">Muya React组件库 核心开发成员/主要维护者 - 酷家乐，2019.7-至今</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.4.</span> <span class="nav-text">酷家乐桌面客户端 项目负责人/主要维护者 - 酷家乐, 2018.7-2019.7</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.5.</span> <span class="nav-text">乐高CMS系统项目负责人 - 酷家乐, 2018.2-2018.5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.6.</span> <span class="nav-text">酷家乐大学&amp;成长体系 核心开发成员 - 酷家乐, 2017.7-2017.12</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#page-wrap"><span class="nav-number">1.7.</span> <span class="nav-text">武汉工程大学 </span></a></li></ol></li></ol></div>
             
 
           </div>
